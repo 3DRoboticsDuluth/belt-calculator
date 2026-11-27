@@ -1,6 +1,6 @@
 # Timing Belt Calculator
 
-Static, dependency-free web app. Open index.html locally for calculations; HTTPS hosting enables offline installation and shareable public links.
+Static, dependency-free web app. Open index.html locally for calculations; HTTPS hosting enables offline installation and shareable public links. Open **How it’s calculated** for the illustrated guide, which also works offline after the app has cached its pages.
 
 ## GitHub Pages
 1. Create a public repository named `belt-calculator`.
