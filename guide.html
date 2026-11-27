@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#125e78">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg">
+  <title>How timing belt calculations work</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #eef2f5;
+      --card: #fff;
+      --ink: #172b3b;
+      --muted: #526777;
+      --line: #d5dfe5;
+      --accent: #125e78;
+      --arc: #94501b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #101820;
+        --card: #1c2833;
+        --ink: #edf4f8;
+        --muted: #a9bbc9;
+        --line: #3b4b59;
+        --accent: #7ed3eb;
+        --arc: #ffbd83;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, sans-serif; }
+    main { max-width: 850px; margin: auto; padding: 24px 16px; }
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { font-size: clamp(1.75rem, 5vw, 2.5rem); }
+    h2 { font-size: 1.3rem; margin-top: 0; }
+    h3 { font-size: 1.05rem; }
+    a { color: var(--accent); }
+    p, figcaption { color: var(--muted); }
+    section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: clamp(14px, 4vw, 24px); margin: 18px 0; }
+    figure { margin: 1.25rem 0 0; }
+    svg { display: block; width: 100%; max-width: 480px; margin-inline: auto; }
+    svg text { fill: var(--ink); font: 14px system-ui, sans-serif; text-anchor: middle; }
+    .shape, .span, .arc, .dim { fill: none; stroke: currentColor; stroke-width: 2; }
+    .span { color: var(--accent); stroke-width: 3; }
+    .arc { color: var(--arc); stroke-width: 3; }
+    .dim { stroke-width: 1.25; stroke-dasharray: 4 3; }
+    figcaption { text-align: center; font-size: .9rem; margin-top: .5rem; }
+    .equation { margin: .75rem 0; padding: .65rem .8rem; background: var(--bg); color: var(--ink); border-radius: 8px; overflow-x: auto; }
+    math { font-size: 1.1em; }
+    .equation math { text-align: start; }
+    dt { font-weight: 700; }
+    dd { margin: 0 0 .75rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <a id="backToCalculator" href="./index.html">← Back to calculator</a>
+    <h1>How timing belt calculations work</h1>
+    <p>Find the belt tooth count or pulley center distance for an open, two-pulley drive. The worked example uses a GT2 belt, two 20-tooth pulleys, and 100 mm between their centers.</p>
+  </header>
+
+  <section>
+    <h2>1. Understand belt pitch</h2>
+    <p>Pitch (<var>p</var>) is the center-to-center distance between adjacent teeth along the belt. GT2 uses a 2 mm pitch and HTD 5M uses a 5 mm pitch. The GT2 preset shows a nominal 6 mm belt width. Width is measured across the belt and does not enter the length calculation.</p>
+    <figure>
+      <svg viewBox="0 0 360 110" role="img" aria-labelledby="pitchTitle">
+        <title id="pitchTitle">The pitch dimension runs between the centers of two adjacent GT2 teeth</title>
+        <path class="dim" d="M144 37v58m72-58v58"/>
+        <path class="shape" d="M40 54h280v18h-19q-13 24-26 0h-46q-13 24-26 0h-46q-13 24-26 0H85q-13 24-26 0H40Z"/>
+        <path class="span" d="M144 39h72m-72 0 7-4m-7 4 7 4m65-4-7-4m7 4-7 4"/>
+        <text x="180" y="25">2 mm pitch</text>
+      </svg>
+      <figcaption>Adjacent tooth centers define pitch. The teeth are schematic.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>2. Find the pulley pitch diameter</h2>
+    <p>Multiply the pulley tooth count (<var>N</var>) by pitch to get the pitch circumference. Divide by π to get the pitch diameter (<var>D</var>). The pitch radius (<var>r</var>) is half that diameter.</p>
+    <div class="equation">
+      <math display="block"><mi>D</mi><mo>=</mo><mfrac><mrow><mi>N</mi><mo>×</mo><mi>p</mi></mrow><mi>π</mi></mfrac><mo>,</mo><mspace width="1em"/><mi>r</mi><mo>=</mo><mfrac><mi>D</mi><mn>2</mn></mfrac></math>
+    </div>
+    <p>Each 20-tooth GT2 pulley has a 40 mm pitch circumference, a 12.73 mm pitch diameter, and a 6.37 mm pitch radius. The pitch circle is the effective circle used for belt travel. On a timing pulley, the pitch circle lies outside the physical tooth tips.</p>
+    <figure>
+      <svg viewBox="0 0 360 150" role="img" aria-labelledby="diameterTitle">
+        <title id="diameterTitle">A diameter of 12.73 mm crosses the pitch circle through its center</title>
+        <circle class="shape" cx="180" cy="81" r="28"/>
+        <circle class="dim" cx="180" cy="81" r="36"/>
+        <path class="span" d="M144 81h72m-72 0 7-4m-7 4 7 4m65-4-7-4m7 4-7 4"/>
+        <circle cx="180" cy="81" r="3" fill="currentColor"/>
+        <path class="dim" d="M208 58l15-25h25"/>
+        <text x="291" y="37">Pitch circle</text>
+        <text x="180" y="144">12.73 mm pitch diameter</text>
+      </svg>
+      <figcaption>The dashed pitch circle is shown beyond the physical pulley edge.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>3. Break the belt path into four segments</h2>
+    <p>The belt follows two straight spans tangent to the pitch circles and two curved arcs around the pulleys. With equal pulleys, each span is 100 mm long and each arc covers half the 40 mm pitch circumference.</p>
+    <figure>
+      <svg viewBox="0 0 360 146" role="img" aria-labelledby="segmentsTitle">
+        <title id="segmentsTitle">Two 100 mm straight spans connect two 20 mm semicircular arcs</title>
+        <circle class="dim" cx="92" cy="73" r="28"/><circle class="dim" cx="268" cy="73" r="28"/>
+        <path class="span" d="M92 45h176M92 101h176"/>
+        <path class="arc" d="M92 101a28 28 0 0 1 0-56m176 0a28 28 0 0 1 0 56"/>
+        <text x="180" y="31">100 mm span</text><text x="180" y="125">100 mm span</text>
+        <text x="32" y="68">20 mm</text><text x="32" y="86">arc</text>
+        <text x="328" y="68">20 mm</text><text x="328" y="86">arc</text>
+      </svg>
+      <figcaption>Equal pulleys give parallel spans and 180° of wrap on each pulley.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>4. Calculate total belt pitch length</h2>
+    <p>Let <var>C</var> be the distance between the pulley axes, <var>r</var><sub>1</sub> and <var>r</var><sub>2</sub> the pitch radii, and <var>d</var> = |<var>r</var><sub>2</sub> − <var>r</var><sub>1</sub>| the difference between them. The straight span and the radius difference form the legs of a right triangle with <var>C</var> as its hypotenuse. Each span is √(<var>C</var>² − <var>d</var>²) long.</p>
+    <figure>
+      <svg viewBox="0 0 360 180" role="img" aria-labelledby="geometryTitle">
+        <title id="geometryTitle">Unequal pulleys with a sloping tangent, a horizontal center line, and a right triangle marking the radius difference</title>
+        <circle class="dim" cx="90" cy="98" r="29"/><circle class="dim" cx="267" cy="98" r="49"/>
+        <path class="dim" d="M90 98h177m-177 0L264.7 78.1 267 98M86.7 69.2 90 98m171.5-48.7 5.5 48.7"/>
+        <path class="shape" d="M258.7 78.8l.7 6 6-.7"/>
+        <path class="span" d="M86.7 69.2 261.5 49.3m0 97.4L86.7 126.8"/>
+        <path class="arc" d="M86.7 126.8a29 29 0 0 1 0-57.6m174.8-19.9a49 49 0 1 1 0 97.4"/>
+        <circle cx="90" cy="98" r="2.5" fill="currentColor"/><circle cx="267" cy="98" r="2.5" fill="currentColor"/>
+        <text x="173" y="47">Straight span</text><text x="176" y="118">C</text><text x="281" y="87">d</text>
+      </svg>
+      <figcaption>With unequal pulleys, the straight spans slope and the larger pulley has more wrap.</figcaption>
+    </figure>
+    <p>Adding the two spans and both arcs gives the exact nominal open-belt equation used by the calculator. The inverse sine is in radians.</p>
+    <div class="equation">
+      <math display="block">
+        <mi>L</mi><mo>=</mo><mn>2</mn><msqrt><msup><mi>C</mi><mn>2</mn></msup><mo>−</mo><msup><mi>d</mi><mn>2</mn></msup></msqrt>
+        <mo>+</mo><mi>π</mi><mo>(</mo><msub><mi>r</mi><mn>1</mn></msub><mo>+</mo><msub><mi>r</mi><mn>2</mn></msub><mo>)</mo>
+        <mo>+</mo><mn>2</mn><mi>d</mi><mi>arcsin</mi><mo>(</mo><mfrac><mi>d</mi><mi>C</mi></mfrac><mo>)</mo>
+      </math>
+    </div>
+    <p>For our equal pulleys, <var>d</var> = 0. The two spans total 200 mm, the two arcs total 40 mm, and <strong>the belt pitch length is 240 mm</strong>.</p>
+  </section>
+
+  <section>
+    <h2>5. Convert pitch length to belt tooth count</h2>
+    <div class="equation">
+      <math display="block"><msub><mi>N</mi><mtext>belt</mtext></msub><mo>=</mo><mfrac><mi>L</mi><mi>p</mi></mfrac><mo>=</mo><mfrac><mrow><mn>240</mn><mtext> mm</mtext></mrow><mrow><mn>2</mn><mtext> mm per tooth</mtext></mrow></mfrac><mo>=</mo><mn>120</mn></math>
+    </div>
+    <p>If the estimate is fractional, the calculator picks the nearest whole tooth count that clears the pitch circles. The nearby-sizes table solves for the required centers for each feasible belt. The adjustment is the required center distance minus the center distance you entered. A positive value moves the pulleys farther apart.</p>
+    <figure>
+      <svg viewBox="0 0 360 100" role="img" aria-labelledby="sizesTitle">
+        <title id="sizesTitle">GT2 belt sizes 119, 120, and 121 teeth correspond to 99, 100, and 101 mm centers with the example pulleys</title>
+        <path class="shape" d="M54 49h252m-234-6v12m108-12v12m108-12v12"/>
+        <circle cx="180" cy="49" r="6" fill="var(--accent)"/>
+        <text x="72" y="33">119 teeth</text><text x="180" y="33">120 teeth</text><text x="288" y="33">121 teeth</text>
+        <text x="72" y="77">99 mm</text><text x="180" y="77">100 mm</text><text x="288" y="77">101 mm</text>
+      </svg>
+      <figcaption>One extra 2 mm tooth adds 1 mm to the center distance in this equal-pulley example.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Work backward from a known belt</h2>
+    <p>For a 120-tooth GT2 belt, the target length is 120 × 2 mm = 240 mm. With equal pulleys the equation simplifies to <var>L</var> = 2<var>C</var> + 40 mm, so <var>C</var> = (240 − 40) ÷ 2 = <strong>100 mm</strong>.</p>
+    <p>The calculator uses bisection for all pulley sizes. It first checks that the target belt is longer than the path where the pitch circles just touch. It then starts with a center-distance range from the sum of the pitch radii to the target belt length.</p>
+    <div class="equation">
+      <math display="block"><msub><mi>L</mi><mtext>target</mtext></msub><mo>=</mo><msub><mi>N</mi><mtext>belt</mtext></msub><mi>p</mi><mo>,</mo><mspace width="1em"/><msub><mi>C</mi><mtext>mid</mtext></msub><mo>=</mo><mfrac><mrow><msub><mi>C</mi><mtext>low</mtext></msub><mo>+</mo><msub><mi>C</mi><mtext>high</mtext></msub></mrow><mn>2</mn></mfrac></math>
+    </div>
+    <p>At each midpoint, it evaluates the belt length. If the belt path is too long, it lowers the upper bound. Otherwise it raises the lower bound. Repeating this process converges on the required centers.</p>
+    <figure>
+      <svg viewBox="0 0 360 116" role="img" aria-labelledby="bisectionTitle">
+        <title id="bisectionTitle">The first midpoint is 126.37 mm. The path is too long there, so the remaining search interval runs from 12.73 mm to 126.37 mm.</title>
+        <path class="dim" d="M34 54h292m-292-6v12m146-12v12m146-12v12"/>
+        <path class="span" d="M34 54h146"/>
+        <circle cx="180" cy="54" r="5" fill="var(--accent)"/>
+        <text x="48" y="83">12.73 mm</text><text x="180" y="37">126.37 mm</text><text x="311" y="83">240 mm</text>
+        <text x="107" y="110">Remaining interval</text>
+      </svg>
+      <figcaption>The first midpoint produces a belt path longer than 240 mm, so the search keeps the lower half of the interval.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Pulley wrap and teeth in engagement</h2>
+    <p>Set <var>α</var> = arcsin(<var>d</var>/<var>C</var>). The smaller pulley loses wrap and the larger pulley gains it. The angles below are in radians. Multiply by 180/π to convert to degrees.</p>
+    <div class="equation">
+      <math display="block"><msub><mi>θ</mi><mtext>small</mtext></msub><mo>=</mo><mi>π</mi><mo>−</mo><mn>2</mn><mi>α</mi><mo>,</mo><mspace width="1em"/><msub><mi>θ</mi><mtext>large</mtext></msub><mo>=</mo><mi>π</mi><mo>+</mo><mn>2</mn><mi>α</mi></math>
+    </div>
+    <p>Multiply the smaller pulley’s tooth count by its fraction of a full turn. In the example, 180° of wrap gives 20 × 180/360 = <strong>10 teeth in engagement</strong>. The calculator flags estimates below six teeth. Check the belt manufacturer’s engagement requirement for your load.</p>
+    <div class="equation">
+      <math display="block"><msub><mi>N</mi><mtext>engaged</mtext></msub><mo>=</mo><msub><mi>N</mi><mtext>small</mtext></msub><mfrac><msub><mi>θ</mi><mtext>small</mtext></msub><mrow><mn>2</mn><mi>π</mi></mrow></mfrac></math>
+    </div>
+  </section>
+
+  <section>
+    <h2>Drive ratio</h2>
+    <p>With pulley 1 driving pulley 2, divide the driven pulley tooth count by the driver tooth count. A 20-tooth driver and a 40-tooth driven pulley give 2:1 reduction, so the driven pulley turns at half the driver speed. The two 20-tooth pulleys in the example give 1:1.</p>
+    <div class="equation">
+      <math display="block"><mtext>Reduction</mtext><mo>=</mo><mfrac><msub><mi>N</mi><mn>2</mn></msub><msub><mi>N</mi><mn>1</mn></msub></mfrac></math>
+    </div>
+  </section>
+
+  <section>
+    <h2>Checks before choosing a belt</h2>
+    <dl>
+      <dt>Stock and fit</dt>
+      <dd>Confirm that the belt is available in the required tooth profile, pitch, width, and tooth count, and that it matches both pulleys.</dd>
+      <dt>Clearance</dt>
+      <dd>The calculator requires <var>C</var> &gt; <var>r</var><sub>1</sub> + <var>r</var><sub>2</sub>. Check real flange, housing, and mounting clearances separately.</dd>
+      <dt>Tension and installation</dt>
+      <dd>Use the manufacturer’s tension specification and allow enough mount travel for installation and tensioning. The center distances are nominal geometry. Drives with idlers or crossed belts use different paths.</dd>
+    </dl>
+  </section>
+</main>
+<script>
+  document.getElementById('backToCalculator').search = location.search;
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>

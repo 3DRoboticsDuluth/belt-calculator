@@ -1,1 +1,29 @@
-const CACHE='belt-calc-v3';const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('belt-calc-')&&k!==CACHE).map(k=>caches.delete(k))))));self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;if(e.request.mode==='navigate'){e.respondWith(fetch(e.request).catch(()=>caches.match('./index.html')));return;}e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});
+const CACHE = 'belt-calc-v4';
+const ASSETS = ['./', './index.html', './guide.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
+const GUIDE_PATH = new URL('./guide.html', self.location.href).pathname;
+
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(
+    keys.filter(key => key.startsWith('belt-calc-') && key !== CACHE).map(key => caches.delete(key))
+  )));
+});
+
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  if (event.request.method !== 'GET' || url.origin !== self.location.origin) return;
+
+  if (event.request.mode === 'navigate') {
+    const page = url.pathname === GUIDE_PATH ? './guide.html' : './index.html';
+    event.respondWith(fetch(event.request).catch(async () => {
+      const cache = await caches.open(CACHE);
+      return cache.match(page);
+    }));
+    return;
+  }
+
+  event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
+});
